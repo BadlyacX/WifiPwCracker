@@ -1,7 +1,32 @@
 import random
 import time
 import pywifi
-from pywifi import const
+from pywifi import const, PyWiFi, Profile
+
+def scan_wifi():
+    wifi = PyWiFi()
+    iface = wifi.interfaces()[0]
+    iface.scan()
+    results = iface.scan_results()
+
+    wifi_list = []
+    for network in results:
+        security = "OPEN"
+        if network.akm:
+            if const.AKM_TYPE_WPA2 in network.akm:
+                security = "WPA2"
+            elif const.AKM_TYPE_WPA in network.akm:
+                security = "WPA"
+            elif const.AKM_TYPE_WPA3 in network.akm:
+                security = "WPA3"
+
+        wifi_list.append({
+            "SSID": network.ssid,
+            "BSSID": network.bssid,
+            "Security": security
+        })
+
+    return wifi_list
 
 def auto_guess(target):
     
